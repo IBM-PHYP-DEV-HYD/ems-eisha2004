@@ -4,13 +4,13 @@
 #include "XyzInternEmployee.H"
 #include <iostream>
 #include <cstring>
+#include <iomanip>
 
 XyzEmployeeManager::XyzEmployeeManager() {
     seedRandom();
 }
 
 XyzEmployeeManager::~XyzEmployeeManager() {
-    // delete all employee pointers in both deques
     auto it = mCurrentDeque.getIterator();
     while (it.hasNext()) {
         delete it.value();
@@ -27,9 +27,7 @@ void XyzEmployeeManager::addEmployeeRandom() {
     XyzEmployeeBuilder b;
     b.randomize();
     XyzEmpBase* e = b.build();
-    // if resigned by random, move minimal to resigned deque
     if (e->getStatus() == EmpStatus::RESIGNED) {
-        // build minimal resigned copy
         XyzEmpBase* r = XyzEmployeeBuilder::buildResignedMinimal(e);
         mResignedDeque.pushBack(r);
         delete e;
@@ -83,6 +81,7 @@ void XyzEmployeeManager::findByName(const std::string& namePart) {
         XyzEmpBase* e = it.value();
         if (e->getName().find(namePart) != std::string::npos) {
             e->printSummary();
+            std::cout << "\n";
             found = true;
         }
         it.next();
@@ -96,7 +95,6 @@ bool XyzEmployeeManager::removeEmployeeById(const std::string& id) {
     while (it.hasNext()) {
         XyzEmpBase* e = it.value();
         if (e->getId() == id) {
-            // construct minimal resigned copy
             XyzEmpBase* r = XyzEmployeeBuilder::buildResignedMinimal(e);
             mResignedDeque.pushBack(r);
             delete e;
@@ -115,12 +113,10 @@ bool XyzEmployeeManager::convertToFullTime(const std::string& id) {
     while (it.hasNext()) {
         XyzEmpBase* e = it.value();
         if (e->getId() == id) {
-            if (e->getType() == EmpType::FullTime) return false; // already
-            // create full-time with same name/id/gender/dob/doj; new ID must end with F: change last char
+            if (e->getType() == EmpType::FullTime) return false;
             std::string oldid = e->getId();
             if (oldid.size()>=1) oldid[oldid.size()-1] = 'F';
             XyzFullTimeEmployee* nf = new XyzFullTimeEmployee(e->getName(), oldid, EmpStatus::ACTIVE, e->getGender(), e->getDob(), e->getDoj(), 0);
-            // delete old
             delete e;
             mCurrentDeque.removeAt(index);
             mCurrentDeque.insertAt(index, nf);
@@ -144,24 +140,55 @@ void XyzEmployeeManager::addLeavesToAllFullTime(int n) {
     }
 }
 
+static void printSummaryHeaderBox() {
+    std::cout << "--------------------------------------------------------------------------------------------------------\n";
+    std::cout << "| ID      | Name            | Type | Status  | G | DOJ      | Extra\n";
+    std::cout << "--------------------------------------------------------------------------------------------------------\n";
+}
+
+/*void XyzFullTimeEmployee::printEmployeeDetails() {
+    cout << "| "<<left<<setw(22)<<mName<<" | "<<left<<setw(10)<<mEmpID<<" | "<<left<<setw(10)<<"Full Time"<<" | "
+    <<left<<setw(12)<<((mStatus==XyzEmployeeEnums::Active)?"Active":((mStatus==XyzEmployeeEnums::Inactive)?"Inactive":"Resigned"))<<" | "
+    <<left<<setw(9)<<((mGender==XyzEmployeeEnums::Male)?"Male":"Female")<<" | "<<left<<setw(13)<<mDOB<<" | "<<left<<setw(15)<<mDOJ<<" | "
+    <<left<<setw(11)<<mLeavesLeft<<" | "<<left<<setw(14)<<mLeavesAvailed<<" | "<<left<<setw(14)<<"NA"<<" | "<<left<<setw(7)<<"NA"<<" | "
+    <<left<<setw(6)<<"NA"<<" |\n";
+}*/
 void XyzEmployeeManager::printAllCurrent() const {
     std::cout << "Current Employees Summary:\n";
+    if (mCurrentDeque.empty()) {
+        std::cout << "No current employees to display.\n";
+        return;
+    }
+    printSummaryHeaderBox();
     auto it = mCurrentDeque.getIterator();
     while (it.hasNext()) {
         XyzEmpBase* e = it.value();
+        // print a line using the base/derived printSummary formatting
+        std::ostringstream oss;
+        // use printSummary to output formatted part, but we will capture to cout directly
         e->printSummary();
+        // for readability endline after summary
+        std::cout << "\n";
         it.next();
     }
+    std::cout << "-------------------------------------------\n";
 }
 
 void XyzEmployeeManager::printAllResigned() const {
     std::cout << "Resigned Employees Summary:\n";
+    if (mResignedDeque.empty()) {
+        std::cout << "No resigned employees to display.\n";
+        return;
+    }
+    printSummaryHeaderBox();
     auto it = mResignedDeque.getIterator();
     while (it.hasNext()) {
         XyzEmpBase* e = it.value();
         e->printSummary();
+        std::cout << "\n";
         it.next();
     }
+    std::cout << "---------------------------------------------------------------\n";
 }
 
 void XyzEmployeeManager::printSummaryCounts() const {
@@ -176,5 +203,5 @@ void XyzEmployeeManager::printSummaryCounts() const {
         if (e->getType()==EmpType::Intern) ++intern;
         it.next();
     }
-    std::cout << "Counts: Current="<<total<<" (Full="<<full<<" Ctr="<<cont<<" Int="<<intern<<") Resigned="<<resigned<<"\n";
+    std::cout << "Current Employees: " << total << " | FullTime: " << full << " | Contractor: " << cont << " | Intern: " << intern << " | Resigned: " << resigned << "\n";
 }

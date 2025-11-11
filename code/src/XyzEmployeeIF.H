@@ -1,5 +1,5 @@
-#ifndef XYZEMPIF_H
-#define XYZEMPIF_H
+#ifndef XYZEMPLOYEEIF_H
+#define XYZEMPLOYEEIF_H
 
 #include <string>
 #include "Enums.H"
@@ -14,8 +14,7 @@ public:
     virtual Gender getGender() const = 0;
     virtual std::string getDob() const = 0;
     virtual std::string getDoj() const = 0;
-    virtual std::string getDol() const = 0; // may be "NA"
-    // updateable (except name/id/gender/dob)
+    virtual std::string getDol() const = 0;
     virtual void setStatus(EmpStatus s) = 0;
     virtual void setDol(const std::string& dol) = 0;
 
@@ -23,4 +22,4 @@ public:
     virtual void printDetails() const = 0;
 };
 
-#endif // XYZEMPIF_H
+#endif // XYZEMPLOYEEIF_H

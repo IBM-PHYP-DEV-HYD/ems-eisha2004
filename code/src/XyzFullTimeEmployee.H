@@ -7,6 +7,7 @@
 
 class XyzFullTimeEmployee : public XyzEmpBase {
     int mLeavesAvailed;
+
 public:
     XyzFullTimeEmployee(const std::string& nameParm,
                         const std::string& idParm,
@@ -14,22 +15,13 @@ public:
                         Gender genderParm,
                         const std::string& dobParm,
                         const std::string& dojParm,
-                        int leavesAvailedParm = 0)
-    : XyzEmpBase(nameParm, idParm, EmpType::FullTime, statusParm, genderParm, dobParm, dojParm, "NA"),
-      mLeavesAvailed(leavesAvailedParm) {}
+                        int leavesAvailedParm = 0);
 
-    int getLeavesAvailed() const { return mLeavesAvailed; }
-    void addLeaves(int n) { mLeavesAvailed += n; if (mLeavesAvailed < 0) mLeavesAvailed = 0; if (mLeavesAvailed > MAX_LEAVES_FULLTIME) mLeavesAvailed = MAX_LEAVES_FULLTIME; }
+    int getLeavesAvailed() const;
+    void addLeaves(int n); // adds n leaves (can be negative to subtract) - clamped
 
-    void printSummary() const override {
-        XyzEmpBase::printSummary();
-        std::cout << " " << std::setw(3) << mLeavesAvailed << "/" << std::setw(3) << MAX_LEAVES_FULLTIME << "\n";
-    }
-
-    void printDetails() const override {
-        XyzEmpBase::printDetails();
-        std::cout << " LeavesAvailed:" << mLeavesAvailed << " LeavesLeft:" << (MAX_LEAVES_FULLTIME - mLeavesAvailed) << "\n";
-    }
+    void printSummary() const override;
+    void printDetails() const override;
 };
 
 #endif // XYZFULLTIME_H

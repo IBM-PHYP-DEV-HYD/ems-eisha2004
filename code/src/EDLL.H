@@ -1,7 +1,6 @@
 #ifndef EDLL_H
 #define EDLL_H
 
-#include <iostream>
 #include "Exceptions.H"
 
 template<typename T>
@@ -135,8 +134,7 @@ public:
         --mSize;
     }
 
-    // returns index of first match (using pointer equality or compare function externally)
-    // Provide iteration helpers:
+    // iteration helper (returns values of type T)
     class Iterator {
         Node* mNode;
     public:

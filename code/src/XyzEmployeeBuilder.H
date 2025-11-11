@@ -6,7 +6,6 @@
 #include "XyzContractorEmployee.H"
 #include "XyzInternEmployee.H"
 #include "Utils.H"
-#include <string>
 
 class XyzEmployeeBuilder {
 private:
@@ -26,7 +25,6 @@ private:
 
 public:
     XyzEmployeeBuilder();
-    // configure: setters (return self for chaining)
     XyzEmployeeBuilder& setName(const std::string& n);
     XyzEmployeeBuilder& setType(EmpType t);
     XyzEmployeeBuilder& setStatus(EmpStatus s);
@@ -39,12 +37,8 @@ public:
     XyzEmployeeBuilder& setCollege(College c);
     XyzEmployeeBuilder& setBranch(Branch b);
 
-    // convenience: randomize all fields for a random employee (type random inside)
     void randomize();
-
-    // build: returns pointer to base (caller manages lifetime)
     XyzEmpBase* build();
-    // build resigned-minimal copy from an existing pointer
     static XyzEmpBase* buildResignedMinimal(XyzEmpBase* src);
 };
 

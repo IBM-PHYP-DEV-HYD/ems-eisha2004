@@ -1,86 +1,249 @@
-#include <iostream>
 #include "XyzEmployeeManager.H"
+#include "XyzFullTimeEmployee.H"
+#include "XyzContractorEmployee.H"
+#include "XyzInternEmployee.H"
+#include <iostream>
+#include <limits>
+#include <string>
 
-void printMainMenu() {
-    std::cout << "\nMain Menu:\n1 Add an Employee\n2 Remove an Employee\n3 Employee Details\n4 Others\n-1 Exit\nEnter choice: ";
+using namespace std;
+
+static void printLineBox() {
+    cout << "------------------------------------------" << endl;
 }
 
-void printAddMenu() {
-    std::cout << "\nAdd Menu:\n1 Add Random\n2 Add Full-Time\n3 Add Contractor\n4 Add Intern\nEnter choice: ";
+static int safeReadIntPrompt(const string &prompt, bool mustBePositive=false) {
+    int val;
+    while (true) {
+        if (!prompt.empty()) cout << prompt;
+        if (cin >> val) {
+            if (mustBePositive && val <= 0) {
+                cout << "Please enter a positive integer.\n";
+                continue;
+            }
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            return val;
+        }
+        cout << "Invalid input, Please enter a number.\n";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
 }
 
-void printDetailsMenu() {
-    std::cout << "\nDetails Menu:\n1 All Employees Summary\n2 Resigned Employees Summary\n3 Search by ID\n4 Search by Name\nEnter choice: ";
+static string safeReadToken(const string &prompt) {
+    string s;
+    cout << prompt;
+    cin >> s;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    return s;
 }
 
-void printOthersMenu() {
-    std::cout << "\nOthers Menu:\n1 Add n leaves to all Full-Time\n2 Convert Intern/Contractor to Full-Time\n3 Add n random employees (test)\nEnter choice: ";
+static void printMainMenu() {
+    printLineBox();
+    cout << "|               MAIN MENU                |" << endl;
+    printLineBox();
+    cout << "| 1. Add an Employee                     |" << endl;
+    cout << "| 2. Remove an Employee                  |" << endl;
+    cout << "| 3. Employee Details                    |" << endl;
+    cout << "| 4. Others                              |" << endl;
+    cout << "| -1. Exit                               |" << endl;
+    printLineBox();
+    cout << "Enter choice: ";
+}
+
+static void printAddMenu() {
+    printLineBox();
+    cout << "|               ADD MENU                 |" << endl;
+    printLineBox();
+    cout << "| 1. Add Random                          |" << endl;
+    cout << "| 2. Add Full-Time Employee              |" << endl;
+    cout << "| 3. Add Contractor                      |" << endl;
+    cout << "| 4. Add Intern                          |" << endl;
+    printLineBox();
+    cout << "Enter choice: ";
+}
+
+static void printDetailsMenu() {
+    printLineBox();
+    cout << "|             DETAILS MENU               |" << endl;
+    printLineBox();
+    cout << "| 1. All Employees Summary               |" << endl;
+    cout << "| 2. Resigned Employees Summary          |" << endl;
+    cout << "| 3. Search by ID                        |" << endl;
+    cout << "| 4. Search by Name                      |" << endl;
+    printLineBox();
+    cout << "Enter choice: ";
+}
+
+static void printOthersMenu() {
+    printLineBox();
+    cout << "|              OTHERS MENU               |" << endl;
+    printLineBox();
+    cout << "| 1. Add 'n' leaves to all Full-Time     |" << endl;
+    cout << "| 2. Convert Intern/Contractor to FT     |" << endl;
+    cout << "| 3. Search by ID                        |" << endl;
+    cout << "| 4. Search by Name                      |" << endl;
+    printLineBox();
+    cout << "Enter choice: ";
 }
 
 int main() {
     XyzEmployeeManager mgr;
-    int choice = 0;
+
     while (true) {
         printMainMenu();
-        std::cin >> choice;
-        if (choice == -1) break;
-        if (choice == 1) {
-            printAddMenu();
-            int c; std::cin>>c;
-            if (c==1) { mgr.addEmployeeRandom(); std::cout<<"Added random employee.\n"; }
-            else if (c==2) { // manual add fulltime (quick sample)
-                XyzFullTimeEmployee* e = new XyzFullTimeEmployee("ManualFT", "XYZ9999F", EmpStatus::ACTIVE, Gender::MALE, "1990-01-01", "2020-01-01", 0);
-                mgr.addFullTime(e);
-                std::cout<<"Added Manual FullTime\n";
-            } else if (c==3) {
-                XyzContractorEmployee* e = new XyzContractorEmployee("ManualC", "XYZ9998C", EmpStatus::ACTIVE, Gender::FEMALE, "1992-01-01", "2023-01-01", "2024-01-01", Agency::Avengers);
-                mgr.addContractor(e);
-                std::cout<<"Added Manual Contractor\n";
-            } else if (c==4) {
-                XyzInternEmployee* e = new XyzInternEmployee("ManualI", "XYZ9997I", EmpStatus::ACTIVE, Gender::MALE, "2000-01-01", "2024-03-01", "2024-09-01", College::IITDelhi, Branch::CSE);
-                mgr.addIntern(e);
-                std::cout<<"Added Manual Intern\n";
-            }
-        } else if (choice == 2) {
-            std::cout << "Enter Emp ID to remove: ";
-            std::string id; std::cin >> id;
-            if (mgr.removeEmployeeById(id)) std::cout<<"Removed and moved to resigned.\n";
-            else std::cout<<"Employee not found.\n";
-        } else if (choice == 3) {
-            printDetailsMenu();
-            int c; std::cin>>c;
-            if (c==1) mgr.printAllCurrent();
-            else if (c==2) mgr.printAllResigned();
-            else if (c==3) {
-                std::cout<<"Enter ID: "; std::string id; std::cin>>id;
-                XyzEmpBase* e = mgr.findById(id);
-                if (e) e->printDetails(); else std::cout<<"Not found.\n";
-            } else if (c==4) {
-                std::cout<<"Enter name or substring: "; std::string nm; std::cin>>nm;
-                mgr.findByName(nm);
-            }
-        } else if (choice == 4) {
-            printOthersMenu();
-            int c; std::cin>>c;
-            if (c==1) {
-                std::cout<<"Enter n leaves to add: "; int n; std::cin>>n;
-                mgr.addLeavesToAllFullTime(n);
-                std::cout<<"Added leaves.\n";
-            } else if (c==2) {
-                std::cout<<"Enter Emp ID to convert to Full-Time: "; std::string id; std::cin>>id;
-                if (mgr.convertToFullTime(id)) std::cout<<"Converted.\n"; else std::cout<<"Convert failed (not found or already FT).\n";
-            } else if (c==3) {
-                std::cout<<"Enter n (default 10): "; int n; std::cin>>n;
-                if (n<=0) n = 10;
-                mgr.addNEmployeesRandom(n);
-                std::cout<<"Added "<<n<<" random employees.\n";
-            }
-        } else {
-            std::cout<<"Invalid choice\n";
+        int mainChoice;
+        if (!(cin >> mainChoice)) {
+            cout << "Invalid input, Please enter a number.\n";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            continue;
         }
-        mgr.printSummaryCounts();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        if (mainChoice == -1) {
+            cout << "Exiting Employee Management System\n";
+            break;
+        }
+
+        switch (mainChoice) {
+            case 1: {
+                printAddMenu();
+                int addChoice = safeReadIntPrompt("", true);
+                switch (addChoice) {
+                    case 1: {
+                        int n = safeReadIntPrompt("Enter number of random employees to add: ", true);
+                        if (n > 1000) { cout << "Please choose <= 1000.\n"; break; }
+                        mgr.addNEmployeesRandom(n);
+                        cout << "Added " << n << " random employee(s).\n";
+                        mgr.printSummaryCounts();
+                        break;
+                    }
+                    case 2: {
+                        // manual full-time quick
+                        string name = safeReadToken("Enter Name (single token): ");
+                        // let builder generate ID uniqueness for random, for manual we'll ask id or auto-generate simple one
+                        string id = safeReadToken("Enter ID (or type auto): ");
+                        if (id == "auto") id = "XYZ0000F";
+                        XyzFullTimeEmployee* e = new XyzFullTimeEmployee(name, id, EmpStatus::ACTIVE, Gender::MALE, "1995-01-01", "2023-01-01", 0);
+                        mgr.addFullTime(e);
+                        cout << "Manual Full-Time employee added.\n";
+                        mgr.printSummaryCounts();
+                        break;
+                    }
+                    case 3: {
+                        string name = safeReadToken("Enter Name (single token): ");
+                        string id = safeReadToken("Enter ID (or type auto): ");
+                        if (id == "auto") id = "XYZ0000C";
+                        XyzContractorEmployee* e = new XyzContractorEmployee(name, id, EmpStatus::ACTIVE, Gender::FEMALE, "1994-01-01", "2024-01-01", "2025-01-01", Agency::Avengers);
+                        mgr.addContractor(e);
+                        cout << "Manual Contractor added.\n";
+                        mgr.printSummaryCounts();
+                        break;
+                    }
+                    case 4: {
+                        string name = safeReadToken("Enter Name (single token): ");
+                        string id = safeReadToken("Enter ID (or type auto): ");
+                        if (id == "auto") id = "XYZ0000I";
+                        XyzInternEmployee* e = new XyzInternEmployee(name, id, EmpStatus::ACTIVE, Gender::OTHER, "2000-01-01", "2024-03-01", "2024-09-01", College::IITDelhi, Branch::CSE);
+                        mgr.addIntern(e);
+                        cout << "Manual Intern added.\n";
+                        mgr.printSummaryCounts();
+                        break;
+                    }
+                    default:
+                        cout << "Invalid choice in Add Menu.\n";
+                }
+                break;
+            }
+
+            case 2: {
+                printLineBox(); cout << "|           REMOVE AN EMPLOYEE           |\n"; printLineBox();
+                if (mgr.isCurrentEmpty()) {
+                    cout << "| No employees available to remove.      |\n";
+                    printLineBox();
+                    break;
+                }
+                string id;
+                cout << "Enter Employee ID to remove: ";
+                cin >> id;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                if (mgr.removeEmployeeById(id)) {
+                    cout << "Employee removed and moved to resigned deque.\n";
+                } else {
+                    cout << "Employee not found.\n";
+                }
+                mgr.printSummaryCounts();
+                break;
+            }
+
+            case 3: {
+                printDetailsMenu();
+                int dchoice = safeReadIntPrompt("", true);
+                switch (dchoice) {
+                    case 1:
+                        if (mgr.isCurrentEmpty()) cout << "No current employees to display.\n";
+                        else mgr.printAllCurrent();
+                        break;
+                    case 2:
+                        if (mgr.isResignedEmpty()) cout << "No resigned employees to display.\n";
+                        else mgr.printAllResigned();
+                        break;
+                    case 3: {
+                        string id = safeReadToken("Enter Employee ID: ");
+                        XyzEmpBase* e = mgr.findById(id);
+                        if (e) e->printDetails();
+                        else cout << "Employee not found.\n";
+                        break;
+                    }
+                    case 4: {
+                        string namePart = safeReadToken("Enter name or substring: ");
+                        mgr.findByName(namePart);
+                        break;
+                    }
+                    default:
+                        cout << "Invalid choice in Details Menu.\n";
+                }
+                break;
+            }
+
+            case 4: {
+                printOthersMenu();
+                int och = safeReadIntPrompt("", true);
+                switch (och) {
+                    case 1: {
+                        int n = safeReadIntPrompt("Enter n leaves to ADD to all Full-Time employees: ");
+                        if (n == 0) { cout << "No change.\n"; break; }
+                        mgr.addLeavesToAllFullTime(n);
+                        cout << "Added " << n << " leaves (max restricted to 22).\n";
+                        break;
+                    }
+                    case 2: {
+                        string id = safeReadToken("Enter Employee ID to convert to Full-Time: ");
+                        if (mgr.convertToFullTime(id)) cout << "Converted to Full-Time.\n"; else cout << "Conversion failed (not found or already FT).\n";
+                        break;
+                    }
+                    case 3: {
+                        string id = safeReadToken("Search by ID: ");
+                        XyzEmpBase* e = mgr.findById(id);
+                        if (e) e->printDetails(); else cout << "Not found.\n";
+                        break;
+                    }
+                    case 4: {
+                        string namePart = safeReadToken("Search by Name (part): ");
+                        mgr.findByName(namePart);
+                        break;
+                    }
+                    default:
+                        cout << "Invalid option in Others Menu\n";
+                }
+                break;
+            }
+
+            default:
+                cout << "Invalid main menu choice\n";
+        }
     }
 
-    std::cout<<"Exiting. Goodbye.\n";
     return 0;
 }

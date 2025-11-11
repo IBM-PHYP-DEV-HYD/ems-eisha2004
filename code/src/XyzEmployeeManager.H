@@ -1,5 +1,5 @@
-#ifndef XYZMANAGER_H
-#define XYZMANAGER_H
+#ifndef XYZEMPLOYEEMANAGER_H
+#define XYZEMPLOYEEMANAGER_H
 
 #include "EDLL.H"
 #include "XyzEmployeeBase.H"
@@ -8,37 +8,39 @@
 
 class XyzEmployeeManager {
     EDLL<XyzEmpBase*> mCurrentDeque; // ACTIVE + INACTIVE
-    EDLL<XyzEmpBase*> mResignedDeque; // minimal info objects
+    EDLL<XyzEmpBase*> mResignedDeque; // Resigned(removed from the company)
 public:
     XyzEmployeeManager();
     ~XyzEmployeeManager();
 
-    // Add operations
+    
     void addEmployeeRandom();
     void addNEmployeesRandom(int n);
     void addFullTime(XyzFullTimeEmployee* e);
     void addContractor(XyzContractorEmployee* e);
     void addIntern(XyzInternEmployee* e);
 
-    // Remove (resign)
+    
     bool removeEmployeeById(const std::string& id);
 
-    // Searches
+   
     XyzEmpBase* findById(const std::string& id);
-    void findByName(const std::string& namePart); // prints matches
+    void findByName(const std::string& namePart); 
 
-    // Conversions
+    
     bool convertToFullTime(const std::string& id);
+    bool isCurrentEmpty() const { return mCurrentDeque.empty(); }
+    bool isResignedEmpty() const { return mResignedDeque.empty(); }
 
-    // Leaves
+    
     void addLeavesToAllFullTime(int n);
 
     // Print
     void printAllCurrent() const;
     void printAllResigned() const;
 
-    // helpers
+   
     void printSummaryCounts() const;
 };
 
-#endif // XYZMANAGER_H
+#endif // XYZEMPLOYEEMANAGER_H

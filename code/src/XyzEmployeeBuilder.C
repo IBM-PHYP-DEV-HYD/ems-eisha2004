@@ -31,44 +31,44 @@ XyzEmployeeBuilder& XyzEmployeeBuilder::setCollege(College c){ bCollege=c; retur
 XyzEmployeeBuilder& XyzEmployeeBuilder::setBranch(Branch b){ bBranch=b; return *this; }
 
 void XyzEmployeeBuilder::randomize() {
-    // assign a random type, then type-specific fields
     int t = randInt(0,2);
     if (t==0) bType = EmpType::FullTime;
     else if (t==1) bType = EmpType::Contractor;
     else bType = EmpType::Intern;
 
-    // names: simple generated
+    // pick a name from the sample list
+    auto names = sampleNames();
+    int ni = randInt(0, (int)names.size()-1);
     std::ostringstream n;
-    n << "Emp" << sSeq;
+    n << names[ni] << randInt(0,999); // add number to reduce duplication
     bName = n.str();
+
     bGender = randGender();
     bStatus = randStatus();
     bDob = makeRandomDOB();
     bDoj = makeRandomDOJ();
     bDol = "NA";
+
     if (bType == EmpType::FullTime) {
         bLeaves = randInt(0, MAX_LEAVES_FULLTIME);
-        // FullTime DOJ -> DOL NA
     } else if (bType == EmpType::Contractor) {
-        // DOL = DOJ + 1year -> for simplicity mark as string "1yr-from-doj" or compute naive
         bAgency = randAgency();
-        // naive DOL: increment year by 1
-        int y, m, d;
+        // DOL = DOJ + 1 year (naive)
+        int y,m,d;
         if (sscanf(bDoj.c_str(), "%d-%d-%d", &y,&m,&d)==3) {
             y += 1;
             std::ostringstream dol; dol<<y<<"-"<<std::setw(2)<<std::setfill('0')<<m<<"-"<<std::setw(2)<<std::setfill('0')<<d;
             bDol = dol.str();
-        } else bDol = "NA";
+        }
     } else if (bType == EmpType::Intern) {
         bCollege = randCollege();
         bBranch = randBranch();
-        // naive DOL: +6 months
-        int y, m, d;
+        int y,m,d;
         if (sscanf(bDoj.c_str(), "%d-%d-%d", &y,&m,&d)==3) {
             m += 6; if (m>12) { y += 1; m -= 12; }
             std::ostringstream dol; dol<<y<<"-"<<std::setw(2)<<std::setfill('0')<<m<<"-"<<std::setw(2)<<std::setfill('0')<<d;
             bDol = dol.str();
-        } else bDol = "NA";
+        }
     }
 }
 
@@ -77,24 +77,16 @@ XyzEmpBase* XyzEmployeeBuilder::build() {
     std::string id = makeId(sSeq, bType);
     ++sSeq;
     if (bType == EmpType::FullTime) {
-        XyzFullTimeEmployee* e = new XyzFullTimeEmployee(bName, id, bStatus, bGender, bDob, bDoj, bLeaves);
-        return e;
+        return new XyzFullTimeEmployee(bName, id, bStatus, bGender, bDob, bDoj, bLeaves);
     } else if (bType == EmpType::Contractor) {
-        XyzContractorEmployee* e = new XyzContractorEmployee(bName, id, bStatus, bGender, bDob, bDoj, bDol, bAgency);
-        return e;
-    } else { // Intern
-        XyzInternEmployee* e = new XyzInternEmployee(bName, id, bStatus, bGender, bDob, bDoj, bDol, bCollege, bBranch);
-        return e;
+        return new XyzContractorEmployee(bName, id, bStatus, bGender, bDob, bDoj, bDol, bAgency);
+    } else {
+        return new XyzInternEmployee(bName, id, bStatus, bGender, bDob, bDoj, bDol, bCollege, bBranch);
     }
 }
 
 XyzEmpBase* XyzEmployeeBuilder::buildResignedMinimal(XyzEmpBase* src) {
     if (!src) return nullptr;
-    // create a copy with minimal fields as separate XyzEmpBase derived object. For simplicity use base class pointer with same derived type but copy minimal fields.
-    // We'll create a XyzEmpBase object (using FullTime class as generic container with NA for leaves) OR reuse src type but set fields minimal.
-    // Here: create new XyzEmpBase-like object by creating a new XyzEmpBase derived container: use XyzEmpBase by creating a "FullTime" with NA fields but type set to src->getType() [id will keep type suffix].
-    // Simpler: if src is FullTime -> create FullTime with leaves 0 and set DOL; Contractor/Intern -> create corresponding type but only preserve the necessary fields.
-
     EmpType t = src->getType();
     std::string name = src->getName();
     std::string id = src->getId();
@@ -107,7 +99,6 @@ XyzEmpBase* XyzEmployeeBuilder::buildResignedMinimal(XyzEmpBase* src) {
     if (t == EmpType::FullTime) {
         return new XyzFullTimeEmployee(name, id, status, g, dob, doj, 0);
     } else if (t == EmpType::Contractor) {
-        // agency unknown; set to None
         return new XyzContractorEmployee(name, id, status, g, dob, doj, dol, Agency::None);
     } else {
         return new XyzInternEmployee(name, id, status, g, dob, doj, dol, College::None, Branch::UnknownBranch);
