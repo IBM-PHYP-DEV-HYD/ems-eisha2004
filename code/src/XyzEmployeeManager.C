@@ -31,7 +31,7 @@ bool XyzEmployeeManager::removeEmployeeById(const string& id) {
         if (it.value()->getId() == id) {
             XyzEmpBase* emp = it.value();
             emp->setStatus(EmpStatus::RESIGNED);
-            emp->setDol("2025-11-12"); // Example; can use system date
+            emp->setDol("2025-11-12"); 
             mResignedEmployees.pushBack(emp);
             mCurrentEmployees.removeAt(index);
             cout << "Employee " << id << " marked as resigned.\n";

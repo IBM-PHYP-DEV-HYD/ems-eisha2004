@@ -27,9 +27,6 @@ void XyzEmpBase::setStatus(EmpStatus s) { mStatus = s; }
 void XyzEmpBase::setDol(const std::string& dol) { mDol = dol; }
 XyzEmpBase::~XyzEmpBase() {}
 
-// ─────────────────────────────────────────────────────────────
-// Summary (one-line table row format for listing employees)
-// ─────────────────────────────────────────────────────────────
 void XyzEmpBase::printSummary() const {
     std::cout << "| " << std::left << std::setw(23) << mName
               << "| " << std::setw(11) << mId
@@ -45,9 +42,6 @@ void XyzEmpBase::printSummary() const {
    
 }
 
-// ─────────────────────────────────────────────────────────────
-// Detailed (box-style) info for a single employee
-// ─────────────────────────────────────────────────────────────
 void XyzEmpBase::printDetails() const {
     std::cout << "------------------------------------------\n";
     std::cout << "| Employee Name   : " << mName << "\n";

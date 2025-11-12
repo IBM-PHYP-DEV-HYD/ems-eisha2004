@@ -4,10 +4,6 @@
 #include "Exceptions.H"
 #include <iostream>
 
-// Extended Doubly Linked List (EDLL)
-// Implements insertion/removal at any index (including middle).
-// Used as the core data structure in Employee Manager.
-
 template<typename T>
 class EDLL {
 private:
@@ -46,7 +42,7 @@ public:
     bool empty() const { return mSize == 0; }
     int size() const { return mSize; }
 
-    // Push operations
+
     void pushFront(const T& value) {
         Node* n = new Node(value);
         if (empty()) {
@@ -71,7 +67,7 @@ public:
         ++mSize;
     }
 
-    // Pop operations
+
     void popFront() {
         if (empty()) throw DequeException("EDLL::popFront() - list is empty");
         Node* t = mFront;
@@ -98,7 +94,7 @@ public:
         --mSize;
     }
 
-    // Front and Back access
+
     T& front() const {
         if (empty()) throw DequeException("EDLL::front() - list is empty");
         return mFront->mData;
@@ -109,7 +105,7 @@ public:
         return mRear->mData;
     }
 
-    // Clear list
+   
     void clear() {
         Node* cur = mFront;
         while (cur) {
@@ -121,7 +117,6 @@ public:
         mSize = 0;
     }
 
-    // Insert at specific index (0..mSize)
     void insertAt(int index, const T& value) {
         if (index < 0 || index > mSize)
             throw DequeException("EDLL::insertAt() - index out of range");
@@ -141,7 +136,7 @@ public:
         ++mSize;
     }
 
-    // Remove at specific index (0..mSize-1)
+
     void removeAt(int index) {
         if (index < 0 || index >= mSize)
             throw DequeException("EDLL::removeAt() - index out of range");
@@ -160,7 +155,7 @@ public:
         --mSize;
     }
 
-    // Forward iterator
+    
     class Iterator {
         Node* mNode;
     public:
@@ -170,7 +165,7 @@ public:
         void next() { if (mNode) mNode = mNode->mNext; }
     };
 
-    // Reverse iterator
+   
     class ReverseIterator {
         Node* mNode;
     public:

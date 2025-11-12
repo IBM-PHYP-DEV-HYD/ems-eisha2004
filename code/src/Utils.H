@@ -9,18 +9,15 @@
 #include <vector>
 #include "Enums.H"
 
-// ---------- Random helpers ----------
 static inline void seedRandom() { std::srand((unsigned)std::time(nullptr)); }
 static inline int randInt(int lo, int hi) { return lo + (std::rand() % (hi - lo + 1)); }
 
-// ---------- ID generation ----------
 static inline std::string zeroPad4(int n) {
     std::ostringstream oss;
     oss << std::setw(4) << std::setfill('0') << n;
     return oss.str();
 }
 
-// Global counter for unique IDs
 static inline int gEmpCounter = 1001;
 
 static inline std::string makeUniqueId(EmpType type) {
@@ -30,7 +27,6 @@ static inline std::string makeUniqueId(EmpType type) {
     return id;
 }
 
-// ---------- Random attribute generators ----------
 static inline Gender randGender() {
     int v = randInt(0,2);
     return v==0?Gender::MALE:(v==1?Gender::FEMALE:Gender::OTHER);
@@ -88,7 +84,6 @@ static inline std::string makeRandomDOJ() {
     return oss.str();
 }
 
-// ---------- Random names ----------
 static inline std::vector<std::string> sNames = {
     "Asha","Isha","Rohit","Sneha","Aman","Lata","Vikram","Ishaan","Raj","Pooja",
     "Karan","Maya","Sunil","Neha","Priya","Rita","Ankit","Roshni","Deepak","Sanjay",
@@ -97,7 +92,7 @@ static inline std::vector<std::string> sNames = {
 
 static inline std::string randName() {
     int idx = randInt(0, (int)sNames.size() - 1);
-    return sNames[idx]; // names can repeat
+    return sNames[idx]; 
 }
 
 #endif // UTILS_H

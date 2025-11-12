@@ -30,7 +30,6 @@ public:
 
     virtual ~XyzEmpBase();
 
-    // getters
     std::string getName() const override;
     std::string getId() const override;
     EmpType getType() const override;
@@ -40,11 +39,9 @@ public:
     std::string getDoj() const override;
     std::string getDol() const override;
 
-    // updatables
     void setStatus(EmpStatus s) override;
     void setDol(const std::string& dol) override;
 
-    // printing helpers (base prints common columns)
     virtual void printSummary() const override;
     virtual void printDetails() const override;
 };

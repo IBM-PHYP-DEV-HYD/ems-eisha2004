@@ -8,13 +8,12 @@ class XyzInternEmployee : public XyzEmpBase {
     College mCollege;
     Branch mBranch;
 public:
-    // ✅ Default constructor
+
     XyzInternEmployee()
         : XyzEmpBase("Default Intern", "IN001", EmpType::Intern, EmpStatus::ACTIVE, Gender::FEMALE,
                      "2000-08-12", "2024-05-01", "NA"),
           mCollege(College::IITDelhi), mBranch(Branch::CSE) {}
 
-    // ✅ Existing parameterized constructor
     XyzInternEmployee(const std::string& nameParm,
                       const std::string& idParm,
                       EmpStatus statusParm,

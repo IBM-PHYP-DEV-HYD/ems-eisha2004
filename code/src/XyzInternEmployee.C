@@ -2,7 +2,6 @@
 #include <iomanip>
 #include <iostream>
 
-// Utility to convert College enum to string
 static inline std::string collegeToString(College c) {
     switch (c) {
         case College::IITDelhi: return "IIT Delhi";
@@ -16,7 +15,6 @@ static inline std::string collegeToString(College c) {
     }
 }
 
-// Utility to convert Branch enum to string
 static inline std::string branchToString(Branch b) {
     switch (b) {
         case Branch::CSE: return "CSE";

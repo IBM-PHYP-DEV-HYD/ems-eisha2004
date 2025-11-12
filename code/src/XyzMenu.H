@@ -9,12 +9,12 @@ class XyzMenu {
 private:
     XyzEmployeeManager mManager;
 
-    // Submenus
+
     void displayAddEmployeeMenu();
     void displayEmployeeDetailsMenu();
     void displayOthersMenu();
 
-    // Helper actions
+    
     void addRandomEmployees();
     void addEmployeeByType();
     void removeEmployee();
@@ -23,7 +23,7 @@ private:
     void searchById();
     void searchByName();
 
-    // Utility
+   
     int getValidatedIntInput(const std::string& prompt, int min, int max);
     std::string getValidatedStringInput(const std::string& prompt);
 

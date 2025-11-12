@@ -1,8 +1,8 @@
 #include "XyzMenu.H"
-#include "Utils.H"   // <-- add this so you can call seedRandom()
+#include "Utils.H"  
 
 int main() {
-    seedRandom();    // <-- this line ensures real randomness
+    seedRandom();    
     XyzMenu menu;
     menu.displayMainMenu();
     return 0;

@@ -2,7 +2,6 @@
 #include <iomanip>
 #include <iostream>
 
-// Utility function to convert Agency enum to string
 static inline std::string agencyToString(Agency a) {
     switch (a) {
         case Agency::Avengers: return "Avengers";

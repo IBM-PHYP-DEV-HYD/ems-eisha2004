@@ -3,9 +3,6 @@
 #include <limits>
 using namespace std;
 
-// ======================================================
-// Utility Functions
-// ======================================================
 int XyzMenu::getValidatedIntInput(const string& prompt, int min, int max) {
     int value;
     while (true) {
@@ -26,9 +23,7 @@ string XyzMenu::getValidatedStringInput(const string& prompt) {
     return value;
 }
 
-// ======================================================
-// MAIN MENU
-// ======================================================
+
 void XyzMenu::displayMainMenu() {
     int choice;
     do {
@@ -56,9 +51,7 @@ void XyzMenu::displayMainMenu() {
     } while (choice != -1);
 }
 
-// ======================================================
-// SUB-MENU 1: Add Employee
-// ======================================================
+
 void XyzMenu::displayAddEmployeeMenu() {
     cout << "\n------------------------------------------------------------\n";
     cout << "|              SUB-MENU 1: ADD AN EMPLOYEE                 |\n";
@@ -77,9 +70,7 @@ void XyzMenu::displayAddEmployeeMenu() {
     }
 }
 
-// ======================================================
-// SUB-MENU 2: Employee Details
-// ======================================================
+
 void XyzMenu::displayEmployeeDetailsMenu() {
     cout << "\n------------------------------------------------------------\n";
     cout << "|            SUB-MENU 2: EMPLOYEE DETAILS                  |\n";
@@ -122,9 +113,6 @@ void XyzMenu::displayEmployeeDetailsMenu() {
     }
 }
 
-// ======================================================
-// SUB-MENU 3: Others
-// ======================================================
 void XyzMenu::displayOthersMenu() {
     cout << "\n------------------------------------------------------------\n";
     cout << "|                   SUB-MENU 3: OTHERS                     |\n";
@@ -147,9 +135,6 @@ void XyzMenu::displayOthersMenu() {
     }
 }
 
-// ======================================================
-// ACTION HANDLERS (unchanged)
-// ======================================================
 void XyzMenu::addRandomEmployees() {
     int n = getValidatedIntInput("Enter number of random employees to add: ", 1, 20);
     srand(time(0));
