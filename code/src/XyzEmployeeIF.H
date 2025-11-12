@@ -15,6 +15,7 @@ public:
     virtual std::string getDob() const = 0;
     virtual std::string getDoj() const = 0;
     virtual std::string getDol() const = 0;
+
     virtual void setStatus(EmpStatus s) = 0;
     virtual void setDol(const std::string& dol) = 0;
 

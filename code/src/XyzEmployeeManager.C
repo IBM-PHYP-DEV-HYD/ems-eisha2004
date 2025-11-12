@@ -1,207 +1,200 @@
 #include "XyzEmployeeManager.H"
-#include "XyzFullTimeEmployee.H"
-#include "XyzContractorEmployee.H"
-#include "XyzInternEmployee.H"
 #include <iostream>
-#include <cstring>
 #include <iomanip>
+using namespace std;
 
-XyzEmployeeManager::XyzEmployeeManager() {
-    seedRandom();
+static void printHeaderBox() {
+    cout << "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------\n";
+    cout << "| " << left << setw(22) << "Employee Name"
+         << " | " << setw(10) << "ID"
+         << " | " << setw(10) << "Type"
+         << " | " << setw(12) << "Status"
+         << " | " << setw(9)  << "Gender"
+         << " | " << setw(13) << "DOB"
+         << " | " << setw(15) << "DOJ"
+         << " | " << setw(11) << "Leaves"
+         << " | " << setw(14) << "Agency"
+         << " | " << setw(7)  << "Branch"
+         << " | " << setw(11)  << "College"
+         << " |\n";
+    cout << "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------\n";
 }
 
-XyzEmployeeManager::~XyzEmployeeManager() {
-    auto it = mCurrentDeque.getIterator();
+void XyzEmployeeManager::addFullTime(XyzFullTimeEmployee* e) { mCurrentEmployees.pushBack(e); }
+void XyzEmployeeManager::addContractor(XyzContractorEmployee* e) { mCurrentEmployees.pushBack(e); }
+void XyzEmployeeManager::addIntern(XyzInternEmployee* e) { mCurrentEmployees.pushBack(e); }
+
+bool XyzEmployeeManager::removeEmployeeById(const string& id) {
+    int index = 0;
+    auto it = mCurrentEmployees.getIterator();
     while (it.hasNext()) {
-        delete it.value();
+        if (it.value()->getId() == id) {
+            XyzEmpBase* emp = it.value();
+            emp->setStatus(EmpStatus::RESIGNED);
+            emp->setDol("2025-11-12"); // Example; can use system date
+            mResignedEmployees.pushBack(emp);
+            mCurrentEmployees.removeAt(index);
+            cout << "Employee " << id << " marked as resigned.\n";
+            return true;
+        }
+        it.next();
+        ++index;
+    }
+    cout << "Employee ID " << id << " not found.\n";
+    return false;
+}
+
+bool XyzEmployeeManager::isCurrentEmpty() const { return mCurrentEmployees.empty(); }
+bool XyzEmployeeManager::isResignedEmpty() const { return mResignedEmployees.empty(); }
+
+void XyzEmployeeManager::printAllCurrent() const {
+    if (mCurrentEmployees.empty()) { cout << "No current employees.\n"; return; }
+    printHeaderBox();
+    auto it = mCurrentEmployees.getIterator();
+    while (it.hasNext()) {
+        it.value()->printSummary();
         it.next();
     }
-    it = mResignedDeque.getIterator();
+    cout << "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------\n";
+}
+
+void XyzEmployeeManager::printAllResigned() const {
+    if (mResignedEmployees.empty()) { cout << "No resigned employees.\n"; return; }
+    printHeaderBox();
+    auto it = mResignedEmployees.getIterator();
     while (it.hasNext()) {
-        delete it.value();
+        it.value()->printSummary();
         it.next();
     }
 }
 
-void XyzEmployeeManager::addEmployeeRandom() {
-    XyzEmployeeBuilder b;
-    b.randomize();
-    XyzEmpBase* e = b.build();
-    if (e->getStatus() == EmpStatus::RESIGNED) {
-        XyzEmpBase* r = XyzEmployeeBuilder::buildResignedMinimal(e);
-        mResignedDeque.pushBack(r);
-        delete e;
-    } else {
-        mCurrentDeque.pushBack(e);
-    }
-}
-
-void XyzEmployeeManager::addNEmployeesRandom(int n) {
-    for (int i=0;i<n;++i) addEmployeeRandom();
-}
-
-void XyzEmployeeManager::addFullTime(XyzFullTimeEmployee* e) {
-    if (!e) return;
-    if (e->getStatus() == EmpStatus::RESIGNED) {
-        mResignedDeque.pushBack(XyzEmployeeBuilder::buildResignedMinimal(e));
-        delete e;
-    } else mCurrentDeque.pushBack(e);
-}
-
-void XyzEmployeeManager::addContractor(XyzContractorEmployee* e) {
-    if (!e) return;
-    if (e->getStatus() == EmpStatus::RESIGNED) {
-        mResignedDeque.pushBack(XyzEmployeeBuilder::buildResignedMinimal(e));
-        delete e;
-    } else mCurrentDeque.pushBack(e);
-}
-
-void XyzEmployeeManager::addIntern(XyzInternEmployee* e) {
-    if (!e) return;
-    if (e->getStatus() == EmpStatus::RESIGNED) {
-        mResignedDeque.pushBack(XyzEmployeeBuilder::buildResignedMinimal(e));
-        delete e;
-    } else mCurrentDeque.pushBack(e);
-}
-
-XyzEmpBase* XyzEmployeeManager::findById(const std::string& id) {
-    auto it = mCurrentDeque.getIterator();
+XyzEmpBase* XyzEmployeeManager::findById(const string& id) {
+    auto it = mCurrentEmployees.getIterator();
     while (it.hasNext()) {
-        XyzEmpBase* e = it.value();
-        if (e->getId() == id) return e;
+        if (it.value()->getId() == id)
+            return it.value();
         it.next();
     }
     return nullptr;
 }
 
-void XyzEmployeeManager::findByName(const std::string& namePart) {
-    bool found=false;
-    auto it = mCurrentDeque.getIterator();
+void XyzEmployeeManager::findByName(const string& namePart) {
+    bool found = false;
+    auto it = mCurrentEmployees.getIterator();
     while (it.hasNext()) {
-        XyzEmpBase* e = it.value();
-        if (e->getName().find(namePart) != std::string::npos) {
-            e->printSummary();
-            std::cout << "\n";
+        if (it.value()->getName().find(namePart) != string::npos) {
+            if (!found) printHeaderBox();
+            it.value()->printDetails();
             found = true;
         }
         it.next();
     }
-    if (!found) std::cout << "No matches found in current employees for '"<<namePart<<"'\n";
-}
-
-bool XyzEmployeeManager::removeEmployeeById(const std::string& id) {
-    int index = 0;
-    auto it = mCurrentDeque.getIterator();
-    while (it.hasNext()) {
-        XyzEmpBase* e = it.value();
-        if (e->getId() == id) {
-            XyzEmpBase* r = XyzEmployeeBuilder::buildResignedMinimal(e);
-            mResignedDeque.pushBack(r);
-            delete e;
-            mCurrentDeque.removeAt(index);
-            return true;
-        }
-        it.next();
-        ++index;
-    }
-    return false;
-}
-
-bool XyzEmployeeManager::convertToFullTime(const std::string& id) {
-    int index = 0;
-    auto it = mCurrentDeque.getIterator();
-    while (it.hasNext()) {
-        XyzEmpBase* e = it.value();
-        if (e->getId() == id) {
-            if (e->getType() == EmpType::FullTime) return false;
-            std::string oldid = e->getId();
-            if (oldid.size()>=1) oldid[oldid.size()-1] = 'F';
-            XyzFullTimeEmployee* nf = new XyzFullTimeEmployee(e->getName(), oldid, EmpStatus::ACTIVE, e->getGender(), e->getDob(), e->getDoj(), 0);
-            delete e;
-            mCurrentDeque.removeAt(index);
-            mCurrentDeque.insertAt(index, nf);
-            return true;
-        }
-        it.next();
-        ++index;
-    }
-    return false;
+    if (!found)
+        cout << "No employees found with name containing '" << namePart << "'.\n";
 }
 
 void XyzEmployeeManager::addLeavesToAllFullTime(int n) {
-    auto it = mCurrentDeque.getIterator();
+    auto it = mCurrentEmployees.getIterator();
+    bool any = false;
     while (it.hasNext()) {
-        XyzEmpBase* e = it.value();
-        if (e->getType() == EmpType::FullTime) {
-            XyzFullTimeEmployee* ft = static_cast<XyzFullTimeEmployee*>(e);
+        if (it.value()->getType() == EmpType::FullTime) {
+            auto ft = static_cast<XyzFullTimeEmployee*>(it.value());
             ft->addLeaves(n);
+            any = true;
         }
         it.next();
     }
+    if (any) cout << "Leaves added successfully to all full-time employees.\n";
+    else cout << "No full-time employees found.\n";
 }
 
-static void printSummaryHeaderBox() {
-    std::cout << "--------------------------------------------------------------------------------------------------------\n";
-    std::cout << "| ID      | Name            | Type | Status  | G | DOJ      | Extra\n";
-    std::cout << "--------------------------------------------------------------------------------------------------------\n";
-}
-
-/*void XyzFullTimeEmployee::printEmployeeDetails() {
-    cout << "| "<<left<<setw(22)<<mName<<" | "<<left<<setw(10)<<mEmpID<<" | "<<left<<setw(10)<<"Full Time"<<" | "
-    <<left<<setw(12)<<((mStatus==XyzEmployeeEnums::Active)?"Active":((mStatus==XyzEmployeeEnums::Inactive)?"Inactive":"Resigned"))<<" | "
-    <<left<<setw(9)<<((mGender==XyzEmployeeEnums::Male)?"Male":"Female")<<" | "<<left<<setw(13)<<mDOB<<" | "<<left<<setw(15)<<mDOJ<<" | "
-    <<left<<setw(11)<<mLeavesLeft<<" | "<<left<<setw(14)<<mLeavesAvailed<<" | "<<left<<setw(14)<<"NA"<<" | "<<left<<setw(7)<<"NA"<<" | "
-    <<left<<setw(6)<<"NA"<<" |\n";
-}*/
-void XyzEmployeeManager::printAllCurrent() const {
-    std::cout << "Current Employees Summary:\n";
-    if (mCurrentDeque.empty()) {
-        std::cout << "No current employees to display.\n";
-        return;
+void XyzEmployeeManager::convertInternToFullTime(const string& id) {
+    int index = 0;
+    auto it = mCurrentEmployees.getIterator();
+    while (it.hasNext()) {
+        XyzEmpBase* base = it.value();
+        if (base->getId() == id && base->getType() == EmpType::Intern) {
+            auto intern = static_cast<XyzInternEmployee*>(base);
+            auto ft = new XyzFullTimeEmployee(
+                intern->getName(),
+                intern->getId(),
+                intern->getStatus(),
+                intern->getGender(),
+                intern->getDob(),
+                intern->getDoj(),
+                0);
+            mCurrentEmployees.removeAt(index);
+            mCurrentEmployees.insertAt(index, ft);
+            cout << "Intern converted to Full-Time successfully!\n";
+            delete intern;
+            return;
+        }
+        it.next();
+        ++index;
     }
-    printSummaryHeaderBox();
-    auto it = mCurrentDeque.getIterator();
+    cout << "No intern found with ID " << id << ".\n";
+}
+
+void XyzEmployeeManager::printSummaryByType(const string& type) const {
+    bool found = false;
+    auto it = mCurrentEmployees.getIterator();
     while (it.hasNext()) {
         XyzEmpBase* e = it.value();
-        // print a line using the base/derived printSummary formatting
-        std::ostringstream oss;
-        // use printSummary to output formatted part, but we will capture to cout directly
-        e->printSummary();
-        // for readability endline after summary
-        std::cout << "\n";
+        if ((type == "F" || type == "f") && e->getType() == EmpType::FullTime ||
+            (type == "C" || type == "c") && e->getType() == EmpType::Contractor ||
+            (type == "I" || type == "i") && e->getType() == EmpType::Intern) {
+            if (!found) printHeaderBox();
+            e->printSummary();
+            found = true;
+        }
         it.next();
     }
-    std::cout << "-------------------------------------------\n";
+    if (!found) cout << "No employees of type " << type << " found.\n";
 }
 
-void XyzEmployeeManager::printAllResigned() const {
-    std::cout << "Resigned Employees Summary:\n";
-    if (mResignedDeque.empty()) {
-        std::cout << "No resigned employees to display.\n";
-        return;
-    }
-    printSummaryHeaderBox();
-    auto it = mResignedDeque.getIterator();
+void XyzEmployeeManager::printSummaryByGender(const string& gender) const {
+    bool found = false;
+    auto it = mCurrentEmployees.getIterator();
     while (it.hasNext()) {
         XyzEmpBase* e = it.value();
-        e->printSummary();
-        std::cout << "\n";
+        if ((gender == "M" || gender == "m") && e->getGender() == Gender::MALE ||
+            (gender == "F" || gender == "f") && e->getGender() == Gender::FEMALE ||
+            (gender == "O" || gender == "o") && e->getGender() == Gender::OTHER) {
+            if (!found) printHeaderBox();
+            e->printSummary();
+            found = true;
+        }
         it.next();
     }
-    std::cout << "---------------------------------------------------------------\n";
+    if (!found) cout << "No employees found with gender " << gender << ".\n";
+}
+
+void XyzEmployeeManager::printSummaryByStatus(const string& status) const {
+    bool found = false;
+    auto it = mCurrentEmployees.getIterator();
+    while (it.hasNext()) {
+        XyzEmpBase* e = it.value();
+        if ((status == "A" || status == "a") && e->getStatus() == EmpStatus::ACTIVE ||
+            (status == "I" || status == "i") && e->getStatus() == EmpStatus::INACTIVE ||
+            (status == "R" || status == "r") && e->getStatus() == EmpStatus::RESIGNED) {
+            if (!found) printHeaderBox();
+            e->printSummary();
+            found = true;
+        }
+        it.next();
+    }
+    if (!found) cout << "No employees found with status " << status << ".\n";
 }
 
 void XyzEmployeeManager::printSummaryCounts() const {
-    int total = mCurrentDeque.size();
-    int resigned = mResignedDeque.size();
-    int full=0, cont=0, intern=0;
-    auto it = mCurrentDeque.getIterator();
+    int ft = 0, ct = 0, in = 0;
+    auto it = mCurrentEmployees.getIterator();
     while (it.hasNext()) {
-        XyzEmpBase* e = it.value();
-        if (e->getType()==EmpType::FullTime) ++full;
-        if (e->getType()==EmpType::Contractor) ++cont;
-        if (e->getType()==EmpType::Intern) ++intern;
+        auto e = it.value();
+        if (e->getType() == EmpType::FullTime) ft++;
+        else if (e->getType() == EmpType::Contractor) ct++;
+        else if (e->getType() == EmpType::Intern) in++;
         it.next();
     }
-    std::cout << "Current Employees: " << total << " | FullTime: " << full << " | Contractor: " << cont << " | Intern: " << intern << " | Resigned: " << resigned << "\n";
+    cout << "\nSummary: FullTime=" << ft << " | Contractor=" << ct << " | Intern=" << in << "\n";
 }

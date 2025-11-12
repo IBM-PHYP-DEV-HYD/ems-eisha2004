@@ -9,25 +9,28 @@
 #include <vector>
 #include "Enums.H"
 
-// small helpers used by builder/manager
+// ---------- Random helpers ----------
+static inline void seedRandom() { std::srand((unsigned)std::time(nullptr)); }
+static inline int randInt(int lo, int hi) { return lo + (std::rand() % (hi - lo + 1)); }
 
+// ---------- ID generation ----------
 static inline std::string zeroPad4(int n) {
     std::ostringstream oss;
     oss << std::setw(4) << std::setfill('0') << n;
     return oss.str();
 }
 
-static inline std::string makeId(int seq, EmpType type) {
+// Global counter for unique IDs
+static inline int gEmpCounter = 1001;
+
+static inline std::string makeUniqueId(EmpType type) {
     std::string id = "XYZ";
-    id += zeroPad4(seq);
+    id += zeroPad4(gEmpCounter++);
     id.push_back(typeToChar(type));
     return id;
 }
 
-// random helpers
-static inline void seedRandom() { std::srand((unsigned)std::time(nullptr)); }
-static inline int randInt(int lo, int hi) { return lo + (std::rand() % (hi - lo + 1)); }
-
+// ---------- Random attribute generators ----------
 static inline Gender randGender() {
     int v = randInt(0,2);
     return v==0?Gender::MALE:(v==1?Gender::FEMALE:Gender::OTHER);
@@ -47,7 +50,7 @@ static inline Agency randAgency() {
 
 static inline College randCollege() {
     int v = randInt(0,6);
-    switch(v) {
+    switch(v){
         case 0: return College::IITDelhi;
         case 1: return College::IITMumbai;
         case 2: return College::IITKanpur;
@@ -63,28 +66,38 @@ static inline Branch randBranch() {
     return v==0?Branch::CSE:(v==1?Branch::CSIT:Branch::ECE);
 }
 
-// random date helpers (format YYYY-MM-DD)
 static inline std::string makeRandomDOB() {
-    int year = randInt(1975, 2002);
+    int year = randInt(1988, 2001);
     int month = randInt(1,12);
     int day = randInt(1,28);
-    std::ostringstream oss; oss<<year<<"-"<<std::setw(2)<<std::setfill('0')<<month<<"-"<<std::setw(2)<<std::setfill('0')<<day;
-    return oss.str();
-}
-static inline std::string makeRandomDOJ() {
-    int year = randInt(2016, 2024);
-    int month = randInt(1,12);
-    int day = randInt(1,28);
-    std::ostringstream oss; oss<<year<<"-"<<std::setw(2)<<std::setfill('0')<<month<<"-"<<std::setw(2)<<std::setfill('0')<<day;
+    std::ostringstream oss;
+    oss << year << "-" 
+        << std::setw(2) << std::setfill('0') << month << "-"
+        << std::setw(2) << std::setfill('0') << day;
     return oss.str();
 }
 
-static inline std::vector<std::string> sampleNames() {
-    return {
-        "Asha","Bharat","Chirag","Deepa","Esha","Farah","Gaurav","Hina","Ishaan","Jaya",
-        "Kunal","Lata","Manish","Neha","Omkar","Pooja","Ravi","Sana","Tarun","Usha",
-        "Vikram","Wahid","Yamini","Zubin","Kriti","Ria","Arjun","Siddharth","Priya","Nikhil"
-    };
+static inline std::string makeRandomDOJ() {
+    int year = randInt(2017, 2024);
+    int month = randInt(1,12);
+    int day = randInt(1,28);
+    std::ostringstream oss;
+    oss << year << "-" 
+        << std::setw(2) << std::setfill('0') << month << "-"
+        << std::setw(2) << std::setfill('0') << day;
+    return oss.str();
+}
+
+// ---------- Random names ----------
+static inline std::vector<std::string> sNames = {
+    "Asha","Isha","Rohit","Sneha","Aman","Lata","Vikram","Ishaan","Raj","Pooja",
+    "Karan","Maya","Sunil","Neha","Priya","Rita","Ankit","Roshni","Deepak","Sanjay",
+    "Anita","Rakesh","Gaurav","Shreya","Kunal","Divya","Nitin","Meera","Vikas","Kritika"
+};
+
+static inline std::string randName() {
+    int idx = randInt(0, (int)sNames.size() - 1);
+    return sNames[idx]; // names can repeat
 }
 
 #endif // UTILS_H

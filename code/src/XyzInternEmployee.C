@@ -2,6 +2,30 @@
 #include <iomanip>
 #include <iostream>
 
+// Utility to convert College enum to string
+static inline std::string collegeToString(College c) {
+    switch (c) {
+        case College::IITDelhi: return "IIT Delhi";
+        case College::IITMumbai: return "IIT Mumbai";
+        case College::IITKanpur: return "IIT Kanpur";
+        case College::IITHyderabad: return "IIT Hyderabad";
+        case College::NITWarangal: return "NIT Warangal";
+        case College::NITTiruchi: return "NIT Tiruchi";
+        case College::IIITHyderabad: return "IIIT Hyderabad";
+        default: return "NA";
+    }
+}
+
+// Utility to convert Branch enum to string
+static inline std::string branchToString(Branch b) {
+    switch (b) {
+        case Branch::CSE: return "CSE";
+        case Branch::CSIT: return "CSIT";
+        case Branch::ECE: return "ECE";
+        default: return "NA";
+    }
+}
+
 XyzInternEmployee::XyzInternEmployee(const std::string& nameParm,
                                      const std::string& idParm,
                                      EmpStatus statusParm,
@@ -12,37 +36,27 @@ XyzInternEmployee::XyzInternEmployee(const std::string& nameParm,
                                      College collegeParm,
                                      Branch branchParm)
     : XyzEmpBase(nameParm, idParm, EmpType::Intern, statusParm, genderParm, dobParm, dojParm, dolParm),
-      mCollege(collegeParm), mBranch(branchParm) {}
+      mCollege(collegeParm),
+      mBranch(branchParm) {}
 
-static std::string collegeToString(College c) {
-    switch(c) {
-        case College::IITDelhi: return "IIT Delhi";
-        case College::IITMumbai: return "IIT Mumbai";
-        case College::IITKanpur: return "IIT Kanpur";
-        case College::IITHyderabad: return "IIT Hyderabad";
-        case College::NITWarangal: return "NIT Warangal";
-        case College::NITTiruchi: return "NIT Tiruchi";
-        case College::IIITHyderabad: return "IIIT Hyderabad";
-        default: return "Unknown";
-    }
-}
-static std::string branchToString(Branch b) {
-    switch(b) {
-        case Branch::CSE: return "CSE";
-        case Branch::CSIT: return "CSIT";
-        case Branch::ECE: return "ECE";
-        default: return "Unknown";
-    }
-}
+College XyzInternEmployee::getCollege() const { return mCollege; }
+Branch XyzInternEmployee::getBranch() const { return mBranch; }
 
 void XyzInternEmployee::printSummary() const {
     XyzEmpBase::printSummary();
-    std::cout << " " << std::setw(6) << branchToString(mBranch) << "\n";
+    std::cout << std::left << std::setw(12)  << "NA"
+              << " | " << std::left << std::setw(14) << "NA"
+              << " | " << std::left << std::setw(7)  << branchToString(mBranch)
+              << " | " << std::left << std::setw(11) << collegeToString(mCollege)
+              << " |" << std::endl;
 }
 
 void XyzInternEmployee::printDetails() const {
     XyzEmpBase::printDetails();
-    std::cout << "| College        : " << collegeToString(mCollege) << "\n";
-    std::cout << "| Branch         : " << branchToString(mBranch) << "\n";
-    std::cout << "------------------------------------------\n";
+    std::cout << " | " << std::left << std::setw(11) << "NA"
+              << " | " << std::left << std::setw(14) << "NA"
+              << " | " << std::left << std::setw(7) << branchToString(mBranch)
+              << " | " << std::left << std::setw(15) << collegeToString(mCollege)
+              <<" | "
+              ;
 }

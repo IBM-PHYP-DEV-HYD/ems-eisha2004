@@ -2,6 +2,11 @@
 #define EDLL_H
 
 #include "Exceptions.H"
+#include <iostream>
+
+// Extended Doubly Linked List (EDLL)
+// Implements insertion/removal at any index (including middle).
+// Used as the core data structure in Employee Manager.
 
 template<typename T>
 class EDLL {
@@ -10,7 +15,8 @@ private:
         T mData;
         Node* mPrev;
         Node* mNext;
-        Node(const T& dataParm): mData(dataParm), mPrev(nullptr), mNext(nullptr) {}
+        Node(const T& dataParm)
+            : mData(dataParm), mPrev(nullptr), mNext(nullptr) {}
     };
 
     Node* mFront;
@@ -19,28 +25,33 @@ private:
 
     Node* pGetNodeAt(int index) const {
         if (index < 0 || index >= mSize) return nullptr;
+
         Node* cur;
-        if (index <= mSize/2) {
+        if (index <= mSize / 2) {
             cur = mFront;
-            for (int i=0;i<index;++i) cur = cur->mNext;
+            for (int i = 0; i < index; ++i)
+                cur = cur->mNext;
         } else {
             cur = mRear;
-            for (int i=mSize-1;i>index;--i) cur = cur->mPrev;
+            for (int i = mSize - 1; i > index; --i)
+                cur = cur->mPrev;
         }
         return cur;
     }
 
 public:
-    EDLL(): mFront(nullptr), mRear(nullptr), mSize(0) {}
+    EDLL() : mFront(nullptr), mRear(nullptr), mSize(0) {}
     ~EDLL() { clear(); }
 
-    bool empty() const { return mSize==0; }
+    bool empty() const { return mSize == 0; }
     int size() const { return mSize; }
 
+    // Push operations
     void pushFront(const T& value) {
         Node* n = new Node(value);
-        if (empty()) { mFront = mRear = n; }
-        else {
+        if (empty()) {
+            mFront = mRear = n;
+        } else {
             n->mNext = mFront;
             mFront->mPrev = n;
             mFront = n;
@@ -50,8 +61,9 @@ public:
 
     void pushBack(const T& value) {
         Node* n = new Node(value);
-        if (empty()) { mFront = mRear = n; }
-        else {
+        if (empty()) {
+            mFront = mRear = n;
+        } else {
             mRear->mNext = n;
             n->mPrev = mRear;
             mRear = n;
@@ -59,11 +71,13 @@ public:
         ++mSize;
     }
 
+    // Pop operations
     void popFront() {
-        if (empty()) return;
+        if (empty()) throw DequeException("EDLL::popFront() - list is empty");
         Node* t = mFront;
-        if (mSize==1) { mFront = mRear = nullptr; }
-        else {
+        if (mSize == 1) {
+            mFront = mRear = nullptr;
+        } else {
             mFront = mFront->mNext;
             mFront->mPrev = nullptr;
         }
@@ -72,10 +86,11 @@ public:
     }
 
     void popBack() {
-        if (empty()) return;
+        if (empty()) throw DequeException("EDLL::popBack() - list is empty");
         Node* t = mRear;
-        if (mSize==1) { mFront = mRear = nullptr; }
-        else {
+        if (mSize == 1) {
+            mFront = mRear = nullptr;
+        } else {
             mRear = mRear->mPrev;
             mRear->mNext = nullptr;
         }
@@ -83,15 +98,18 @@ public:
         --mSize;
     }
 
+    // Front and Back access
     T& front() const {
-        if (empty()) throw DequeException("EDLL: empty front");
+        if (empty()) throw DequeException("EDLL::front() - list is empty");
         return mFront->mData;
     }
+
     T& back() const {
-        if (empty()) throw DequeException("EDLL: empty back");
+        if (empty()) throw DequeException("EDLL::back() - list is empty");
         return mRear->mData;
     }
 
+    // Clear list
     void clear() {
         Node* cur = mFront;
         while (cur) {
@@ -103,13 +121,17 @@ public:
         mSize = 0;
     }
 
-    // insert at index: 0..mSize
+    // Insert at specific index (0..mSize)
     void insertAt(int index, const T& value) {
-        if (index < 0 || index > mSize) throw DequeException("insertAt: index out of range");
-        if (index==0) { pushFront(value); return; }
-        if (index==mSize) { pushBack(value); return; }
+        if (index < 0 || index > mSize)
+            throw DequeException("EDLL::insertAt() - index out of range");
+
+        if (index == 0) { pushFront(value); return; }
+        if (index == mSize) { pushBack(value); return; }
+
         Node* nextNode = pGetNodeAt(index);
-        if (!nextNode) throw DequeException("insertAt: internal error");
+        if (!nextNode) throw DequeException("EDLL::insertAt() - internal error");
+
         Node* prevNode = nextNode->mPrev;
         Node* n = new Node(value);
         n->mPrev = prevNode;
@@ -119,31 +141,47 @@ public:
         ++mSize;
     }
 
-    // remove at index 0..mSize-1
+    // Remove at specific index (0..mSize-1)
     void removeAt(int index) {
-        if (index < 0 || index >= mSize) throw DequeException("removeAt: index out of range");
-        if (index==0) { popFront(); return; }
-        if (index==mSize-1) { popBack(); return; }
+        if (index < 0 || index >= mSize)
+            throw DequeException("EDLL::removeAt() - index out of range");
+
+        if (index == 0) { popFront(); return; }
+        if (index == mSize - 1) { popBack(); return; }
+
         Node* curr = pGetNodeAt(index);
-        if (!curr) throw DequeException("removeAt: internal error");
-        Node* p = curr->mPrev;
-        Node* n = curr->mNext;
-        p->mNext = n;
-        n->mPrev = p;
+        if (!curr) throw DequeException("EDLL::removeAt() - internal error");
+
+        Node* prevNode = curr->mPrev;
+        Node* nextNode = curr->mNext;
+        prevNode->mNext = nextNode;
+        nextNode->mPrev = prevNode;
         delete curr;
         --mSize;
     }
 
-    // iteration helper (returns values of type T)
+    // Forward iterator
     class Iterator {
         Node* mNode;
     public:
-        Iterator(Node* n): mNode(n) {}
+        explicit Iterator(Node* n) : mNode(n) {}
         bool hasNext() const { return mNode != nullptr; }
         T& value() const { return mNode->mData; }
         void next() { if (mNode) mNode = mNode->mNext; }
     };
+
+    // Reverse iterator
+    class ReverseIterator {
+        Node* mNode;
+    public:
+        explicit ReverseIterator(Node* n) : mNode(n) {}
+        bool hasPrev() const { return mNode != nullptr; }
+        T& value() const { return mNode->mData; }
+        void prev() { if (mNode) mNode = mNode->mPrev; }
+    };
+
     Iterator getIterator() const { return Iterator(mFront); }
+    ReverseIterator getReverseIterator() const { return ReverseIterator(mRear); }
 };
 
 #endif // EDLL_H

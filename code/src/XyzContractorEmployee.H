@@ -3,12 +3,17 @@
 
 #include "XyzEmployeeBase.H"
 #include "Enums.H"
-#include <iostream>
 
 class XyzContractorEmployee : public XyzEmpBase {
     Agency mAgency;
-
 public:
+    // ✅ Default constructor
+    XyzContractorEmployee()
+        : XyzEmpBase("Default Contractor", "CT001", EmpType::Contractor, EmpStatus::ACTIVE, Gender::MALE,
+                     "1992-05-15", "2021-06-10", "NA"),
+          mAgency(Agency::Avengers) {}
+
+    // ✅ Existing parameterized constructor
     XyzContractorEmployee(const std::string& nameParm,
                           const std::string& idParm,
                           EmpStatus statusParm,
@@ -19,7 +24,6 @@ public:
                           Agency agencyParm);
 
     Agency getAgency() const;
-
     void printSummary() const override;
     void printDetails() const override;
 };

@@ -26,49 +26,27 @@ public:
                Gender genderParm,
                const std::string &dobParm,
                const std::string &dojParm,
-               const std::string &dolParm = "NA")
-        : mName(nameParm), mId(idParm), mType(typeParm),
-          mStatus(statusParm), mGender(genderParm),
-          mDob(dobParm), mDoj(dojParm), mDol(dolParm) {}
+               const std::string &dolParm = "NA");
 
-    virtual ~XyzEmpBase() {}
+    virtual ~XyzEmpBase();
 
     // getters
-    std::string getName() const override { return mName; }
-    std::string getId() const override { return mId; }
-    EmpType getType() const override { return mType; }
-    EmpStatus getStatus() const override { return mStatus; }
-    Gender getGender() const override { return mGender; }
-    std::string getDob() const override { return mDob; }
-    std::string getDoj() const override { return mDoj; }
-    std::string getDol() const override { return mDol; }
+    std::string getName() const override;
+    std::string getId() const override;
+    EmpType getType() const override;
+    EmpStatus getStatus() const override;
+    Gender getGender() const override;
+    std::string getDob() const override;
+    std::string getDoj() const override;
+    std::string getDol() const override;
 
     // updatables
-    void setStatus(EmpStatus s) override { mStatus = s; }
-    void setDol(const std::string& dol) override { mDol = dol; }
+    void setStatus(EmpStatus s) override;
+    void setDol(const std::string& dol) override;
 
-    // printing helpers
-    virtual void printSummary() const override {
-        // ID | Name | Type | Status | Gender | DOJ | Extra (derived prints)
-        std::cout << std::left << std::setw(10) << mId << " "
-                  << std::setw(18) << mName << " "
-                  << std::setw(4) << (mType==EmpType::FullTime?"FT":(mType==EmpType::Contractor?"CT":"IN")) << " "
-                  << std::setw(8) << (mStatus==EmpStatus::ACTIVE?"ACTIVE":(mStatus==EmpStatus::INACTIVE?"INACTIVE":"RESIGNED")) << " "
-                  << std::setw(6) << (mGender==Gender::MALE?"M":(mGender==Gender::FEMALE?"F":"O")) << " "
-                  << std::setw(10) << mDoj;
-    }
-
-    virtual void printDetails() const override {
-        std::cout << "------------------------------------------\n";
-        std::cout << "| Employee Name : " << mName << "\n";
-        std::cout << "| Employee ID   : " << mId << "\n";
-        std::cout << "| Employee Type : " << (mType==EmpType::FullTime?"Full-Time":(mType==EmpType::Contractor?"Contractor":"Intern")) << "\n";
-        std::cout << "| Employee Status: " << (mStatus==EmpStatus::ACTIVE?"Active":(mStatus==EmpStatus::INACTIVE?"Inactive":"Resigned")) << "\n";
-        std::cout << "| Gender        : " << (mGender==Gender::MALE?"Male":(mGender==Gender::FEMALE?"Female":"Other")) << "\n";
-        std::cout << "| Date of Birth : " << mDob << "\n";
-        std::cout << "| Date of Joining: " << mDoj << "\n";
-        std::cout << "| Date of Leaving: " << mDol << "\n";
-    }
+    // printing helpers (base prints common columns)
+    virtual void printSummary() const override;
+    virtual void printDetails() const override;
 };
 
 #endif // XYZEMPBASE_H
