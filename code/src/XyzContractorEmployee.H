@@ -8,10 +8,10 @@ class XyzContractorEmployee : public XyzEmpBase {
     Agency mAgency;
 public:
    
-    XyzContractorEmployee()
-        : XyzEmpBase("Default Contractor", "CT001", EmpType::Contractor, EmpStatus::ACTIVE, Gender::MALE,
+    XyzContractorEmployee();
+        /*: XyzEmpBase("Default Contractor", "CT001", EmpType::Contractor, EmpStatus::ACTIVE, Gender::MALE,
                      "1992-05-15", "2021-06-10", "NA"),
-          mAgency(Agency::Avengers) {}
+          mAgency(Agency::Avengers) {}*/
 
     XyzContractorEmployee(const std::string& nameParm,
                           const std::string& idParm,

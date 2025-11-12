@@ -7,10 +7,10 @@ class XyzFullTimeEmployee : public XyzEmpBase {
     int mLeavesAvailed; 
 public:
 
-    XyzFullTimeEmployee()
-        : XyzEmpBase("Default FT", "FT001", EmpType::FullTime, EmpStatus::ACTIVE, Gender::MALE,
+    XyzFullTimeEmployee();
+        /*: XyzEmpBase("Default FT", "FT001", EmpType::FullTime, EmpStatus::ACTIVE, Gender::MALE,
                      "1990-01-01", "2020-01-01", "NA"),
-          mLeavesAvailed(0) {}
+          mLeavesAvailed(0) {}*/
 
   
     XyzFullTimeEmployee(const std::string& nameParm,

@@ -1,7 +1,7 @@
 #include "XyzFullTimeEmployee.H"
 #include <iostream>
 #include <iomanip>
-
+#include"Utils.H"
 XyzFullTimeEmployee::XyzFullTimeEmployee(const std::string& nameParm,
                                          const std::string& idParm,
                                          EmpStatus statusParm,
@@ -15,6 +15,21 @@ XyzFullTimeEmployee::XyzFullTimeEmployee(const std::string& nameParm,
     if (mLeavesAvailed > 22) mLeavesAvailed = 22;
 }
 
+XyzFullTimeEmployee::XyzFullTimeEmployee()
+  : XyzEmpBase(
+      randName(),
+      makeUniqueId(EmpType::FullTime),
+      EmpType::FullTime,
+      randStatus(),
+      randGender(),
+      makeRandomDOB(),
+      makeRandomDOJ(),
+      std::string("NA")
+    ),
+    mLeavesAvailed(randInt(0,22))
+{
+    // maybe set mDol if status == RESIGNED
+}
 int XyzFullTimeEmployee::getLeavesAvailed() const {
     return mLeavesAvailed;
 }
@@ -30,7 +45,7 @@ void XyzFullTimeEmployee::printSummary() const {
     std::cout << std::left << std::setw(12)  << mLeavesAvailed
               << " | " << std::left << std::setw(14) << "NA"
               << " | " << std::left << std::setw(7)  << "NA"
-              << " | " << std::left << std::setw(11) << "NA"
+              << " | " << std::left << std::setw(15) << "NA"
               << " |" << std::endl;
 }
 

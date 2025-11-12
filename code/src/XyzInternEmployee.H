@@ -9,10 +9,10 @@ class XyzInternEmployee : public XyzEmpBase {
     Branch mBranch;
 public:
 
-    XyzInternEmployee()
-        : XyzEmpBase("Default Intern", "IN001", EmpType::Intern, EmpStatus::ACTIVE, Gender::FEMALE,
+    XyzInternEmployee();
+        /*: XyzEmpBase("Default Intern", "IN001", EmpType::Intern, EmpStatus::ACTIVE, Gender::FEMALE,
                      "2000-08-12", "2024-05-01", "NA"),
-          mCollege(College::IITDelhi), mBranch(Branch::CSE) {}
+          mCollege(College::IITDelhi), mBranch(Branch::CSE) {}*/
 
     XyzInternEmployee(const std::string& nameParm,
                       const std::string& idParm,

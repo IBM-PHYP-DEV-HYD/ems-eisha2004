@@ -1,6 +1,7 @@
 #include "XyzInternEmployee.H"
 #include <iomanip>
 #include <iostream>
+#include"Utils.H"
 
 static inline std::string collegeToString(College c) {
     switch (c) {
@@ -37,6 +38,24 @@ XyzInternEmployee::XyzInternEmployee(const std::string& nameParm,
       mCollege(collegeParm),
       mBranch(branchParm) {}
 
+XyzInternEmployee::XyzInternEmployee()
+  : XyzEmpBase(
+        randName(),
+        makeUniqueId(EmpType::Intern),
+        EmpType::Intern,
+        randStatus(),
+        randGender(),
+        makeRandomDOB(),
+        makeRandomDOJ(),
+        std::string("NA")
+    ),
+    mCollege(randCollege()),
+    mBranch(randBranch())
+{
+    if (getStatus() == EmpStatus::RESIGNED) {
+        setDol("2024-12-31");  
+    }
+}
 College XyzInternEmployee::getCollege() const { return mCollege; }
 Branch XyzInternEmployee::getBranch() const { return mBranch; }
 
@@ -45,7 +64,7 @@ void XyzInternEmployee::printSummary() const {
     std::cout << std::left << std::setw(12)  << "NA"
               << " | " << std::left << std::setw(14) << "NA"
               << " | " << std::left << std::setw(7)  << branchToString(mBranch)
-              << " | " << std::left << std::setw(11) << collegeToString(mCollege)
+              << " | " << std::left << std::setw(15) << collegeToString(mCollege)
               << " |" << std::endl;
 }
 
